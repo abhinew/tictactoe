@@ -38,6 +38,7 @@ export default class GameController {
     }
 
     @Put('/games/:id')
+    @HttpCode(201)
     async updateGame(
       @Param('id') id: number,
       @Body() update: Object
@@ -47,10 +48,9 @@ export default class GameController {
        validate(newObj).then(errors => {
         async function changeGame () {
           const game = await Game.findOne(id);
-          if(!game)  throw new NotFoundError('Cannot find game');
-          console.log(game.board);
-          console.log(newObj);
-          //checkNumberOfMoves();
+          if(!game) {
+            throw new NotFoundError('Cannot find game');
+          }
           return Game.merge(game, update).save();
         }
         if (errors.length > 0) {
@@ -60,11 +60,8 @@ export default class GameController {
           changeGame();
         }
       }
-    ); 
-     
+    );  
     }
-
-
 }
 
 

@@ -40,11 +40,9 @@ let GameController = class GameController {
         class_validator_1.validate(newObj).then(errors => {
             async function changeGame() {
                 const game = await entity_1.default.findOne(id);
-                if (!game)
+                if (!game) {
                     throw new routing_controllers_1.NotFoundError('Cannot find game');
-                console.log(game.board);
-                console.log(newObj);
-                //checkNumberOfMoves();
+                }
                 return entity_1.default.merge(game, update).save();
             }
             if (errors.length > 0) {
@@ -70,6 +68,7 @@ __decorate([
 ], GameController.prototype, "getGame", null);
 __decorate([
     routing_controllers_1.Put('/games/:id'),
+    routing_controllers_1.HttpCode(201),
     __param(0, routing_controllers_1.Param('id')),
     __param(1, routing_controllers_1.Body())
 ], GameController.prototype, "updateGame", null);
