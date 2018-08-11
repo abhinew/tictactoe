@@ -1,5 +1,5 @@
 // src/pages/controller.ts
-import { JsonController, Get, Param, Put, Body, NotFoundError, HttpCode, Post, BodyParam, BadRequestError } from 'routing-controllers'
+import { JsonController, Get, Param, Put, Body, NotFoundError, HttpCode, Post, BodyParam, HttpError } from 'routing-controllers'
 import Game from './entity'
 import { validate } from 'class-validator';
 import { moves } from './lib';
@@ -54,7 +54,7 @@ export default class GameController {
           }
           let numberOfMoves = moves(newObj.board,game.board);
           if (numberOfMoves != 1) {
-            throw BadRequestError
+            throw new HttpError(400, "More than one move is not allowed");
           }
           return Game.merge(game, update).save();
         }

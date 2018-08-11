@@ -46,7 +46,7 @@ let GameController = class GameController {
                 }
                 let numberOfMoves = lib_1.moves(newObj.board, game.board);
                 if (numberOfMoves != 1) {
-                    throw routing_controllers_1.BadRequestError;
+                    throw new routing_controllers_1.HttpError(400, "More than one move is not allowed");
                 }
                 return entity_1.default.merge(game, update).save();
             }
