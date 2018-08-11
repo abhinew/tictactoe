@@ -43,15 +43,19 @@ export default class GameController {
       @Param('id') id: number,
       @Body() update: Partial<Game>
     ) {
-      console.log(update.name);
-      console.log(id);
-      validate(update.name).then(errors => {
+     
+      validate(update).then(errors => {
+        console.log(errors);
         async function changeGame () {
+         // console.log(id);
           const game = await Game.findOne(id);
+          //console.log(game);
           if(!game)  throw new NotFoundError('Cannot find game');
           return Game.merge(game, update).save();
         }
-        if (errors.length > 0) return 
+        if (errors.length > 0) {
+          console.log("Validation failed. errors: ", errors)
+        }  
         else {
           changeGame();
         }
@@ -64,3 +68,17 @@ export default class GameController {
 
 
 
+// validate(update).then(errors => {
+//   async function changeGame () {
+//     const game = await Game.findOne(id);
+//     if(!game)  throw new NotFoundError('Cannot find game');
+//     return Game.merge(game, update).save();
+//   }
+//   if (errors.length > 0) {
+//     console.log("Validation failed. errors: ", errors)
+//   }  
+//   else {
+//     changeGame();
+//   }
+// }
+// ); 

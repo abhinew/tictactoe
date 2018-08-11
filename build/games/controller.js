@@ -36,17 +36,19 @@ let GameController = class GameController {
         return entity_1.default.findOne(id);
     }
     async updateGame(id, update) {
-        console.log(update.name);
-        console.log(id);
-        class_validator_1.validate(update.name).then(errors => {
+        class_validator_1.validate(update).then(errors => {
+            console.log(errors);
             async function changeGame() {
+                // console.log(id);
                 const game = await entity_1.default.findOne(id);
+                //console.log(game);
                 if (!game)
                     throw new routing_controllers_1.NotFoundError('Cannot find game');
                 return entity_1.default.merge(game, update).save();
             }
-            if (errors.length > 0)
-                return;
+            if (errors.length > 0) {
+                console.log("Validation failed. errors: ", errors);
+            }
             else {
                 changeGame();
             }
@@ -74,3 +76,17 @@ GameController = __decorate([
     routing_controllers_1.JsonController()
 ], GameController);
 exports.default = GameController;
+// validate(update).then(errors => {
+//   async function changeGame () {
+//     const game = await Game.findOne(id);
+//     if(!game)  throw new NotFoundError('Cannot find game');
+//     return Game.merge(game, update).save();
+//   }
+//   if (errors.length > 0) {
+//     console.log("Validation failed. errors: ", errors)
+//   }  
+//   else {
+//     changeGame();
+//   }
+// }
+// ); 
