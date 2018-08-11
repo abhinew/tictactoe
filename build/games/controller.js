@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const routing_controllers_1 = require("routing-controllers");
 const entity_1 = require("./entity");
 const class_validator_1 = require("class-validator");
+const lib_1 = require("./lib");
 let GameController = class GameController {
     createGame(name) {
         let colorList = ['red', 'blue', 'green', 'yellow', 'magenta'];
@@ -42,6 +43,10 @@ let GameController = class GameController {
                 const game = await entity_1.default.findOne(id);
                 if (!game) {
                     throw new routing_controllers_1.NotFoundError('Cannot find game');
+                }
+                let numberOfMoves = lib_1.moves(newObj.board, game.board);
+                if (numberOfMoves != 1) {
+                    throw routing_controllers_1.BadRequestError;
                 }
                 return entity_1.default.merge(game, update).save();
             }

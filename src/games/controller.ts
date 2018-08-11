@@ -1,7 +1,8 @@
 // src/pages/controller.ts
-import { JsonController, Get, Param, Put, Body, NotFoundError, HttpCode, Post, BodyParam } from 'routing-controllers'
+import { JsonController, Get, Param, Put, Body, NotFoundError, HttpCode, Post, BodyParam, BadRequestError } from 'routing-controllers'
 import Game from './entity'
 import { validate } from 'class-validator';
+import { moves } from './lib';
 
 
 @JsonController()
@@ -50,6 +51,10 @@ export default class GameController {
           const game = await Game.findOne(id);
           if(!game) {
             throw new NotFoundError('Cannot find game');
+          }
+          let numberOfMoves = moves(newObj.board,game.board);
+          if (numberOfMoves != 1) {
+            throw BadRequestError
           }
           return Game.merge(game, update).save();
         }
