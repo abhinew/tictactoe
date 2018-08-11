@@ -19,9 +19,7 @@ __decorate([
 ], Game.prototype, "name", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: false }),
-    class_validator_1.IsIn(['red', 'magenta', 'blue', 'green', 'yellow'], {
-        message: 'Choose any color from \'red\', \'magenta\', \'blue\', \'green\', \'yellow\''
-    })
+    class_validator_1.IsIn(['red', 'magenta', 'blue', 'green', 'yellow'])
 ], Game.prototype, "color", void 0);
 __decorate([
     typeorm_1.Column('json', { nullable: false })

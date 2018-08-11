@@ -15,7 +15,6 @@ const entity_1 = require("./entity");
 const class_validator_1 = require("class-validator");
 let GameController = class GameController {
     createGame(name) {
-        console.log(name);
         let colorList = ['red', 'blue', 'green', 'yellow', 'magenta'];
         let randomNumber = Math.floor(Math.random() * colorList.length);
         let game = new entity_1.default();
@@ -36,14 +35,16 @@ let GameController = class GameController {
         return entity_1.default.findOne(id);
     }
     async updateGame(id, update) {
-        class_validator_1.validate(update).then(errors => {
-            console.log(errors);
+        let newObj = new entity_1.default();
+        Object.assign(newObj, update);
+        class_validator_1.validate(newObj).then(errors => {
             async function changeGame() {
-                // console.log(id);
                 const game = await entity_1.default.findOne(id);
-                //console.log(game);
                 if (!game)
                     throw new routing_controllers_1.NotFoundError('Cannot find game');
+                console.log(game.board);
+                console.log(newObj);
+                //checkNumberOfMoves();
                 return entity_1.default.merge(game, update).save();
             }
             if (errors.length > 0) {
@@ -58,7 +59,7 @@ let GameController = class GameController {
 __decorate([
     routing_controllers_1.Post('/games'),
     routing_controllers_1.HttpCode(201),
-    __param(0, routing_controllers_1.Param('name'))
+    __param(0, routing_controllers_1.BodyParam('name'))
 ], GameController.prototype, "createGame", null);
 __decorate([
     routing_controllers_1.Get('/games')
@@ -76,17 +77,3 @@ GameController = __decorate([
     routing_controllers_1.JsonController()
 ], GameController);
 exports.default = GameController;
-// validate(update).then(errors => {
-//   async function changeGame () {
-//     const game = await Game.findOne(id);
-//     if(!game)  throw new NotFoundError('Cannot find game');
-//     return Game.merge(game, update).save();
-//   }
-//   if (errors.length > 0) {
-//     console.log("Validation failed. errors: ", errors)
-//   }  
-//   else {
-//     changeGame();
-//   }
-// }
-// ); 

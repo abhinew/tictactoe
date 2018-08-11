@@ -8,8 +8,7 @@ import { validate } from 'class-validator';
 export default class GameController {
     @Post('/games')
     @HttpCode(201)
-    createGame(@Param('name') name: string) { 
-      console.log(name);
+    createGame(@BodyParam('name') name: string) { 
       let colorList = ['red', 'blue', 'green', 'yellow', 'magenta'];
       let randomNumber = Math.floor(Math.random() * colorList.length);
 
@@ -41,16 +40,17 @@ export default class GameController {
     @Put('/games/:id')
     async updateGame(
       @Param('id') id: number,
-      @Body() update: Partial<Game>
+      @Body() update: Object
     ) {
-     
-      validate(update).then(errors => {
-        console.log(errors);
+      let newObj = new Game();
+      Object.assign(newObj, update);
+       validate(newObj).then(errors => {
         async function changeGame () {
-         // console.log(id);
           const game = await Game.findOne(id);
-          //console.log(game);
           if(!game)  throw new NotFoundError('Cannot find game');
+          console.log(game.board);
+          console.log(newObj);
+          //checkNumberOfMoves();
           return Game.merge(game, update).save();
         }
         if (errors.length > 0) {
@@ -60,7 +60,8 @@ export default class GameController {
           changeGame();
         }
       }
-    );   
+    ); 
+     
     }
 
 
@@ -68,17 +69,3 @@ export default class GameController {
 
 
 
-// validate(update).then(errors => {
-//   async function changeGame () {
-//     const game = await Game.findOne(id);
-//     if(!game)  throw new NotFoundError('Cannot find game');
-//     return Game.merge(game, update).save();
-//   }
-//   if (errors.length > 0) {
-//     console.log("Validation failed. errors: ", errors)
-//   }  
-//   else {
-//     changeGame();
-//   }
-// }
-// ); 
