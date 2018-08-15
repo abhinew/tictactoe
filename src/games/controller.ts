@@ -4,7 +4,25 @@ import Game from './entity'
 import { validate } from 'class-validator';
 import { moves } from './lib';
 
+async function changeGame (newObj, id) {
 
+  const game = await Game.findOne(id);
+
+  if(!game) {
+    throw new NotFoundError('Cannot find game');
+  }
+
+  if(newObj.board) {
+    numberOfMoves = moves(newObj.board, game.board);
+    if (numberOfMoves > 1) {
+      console.log("test")
+    }
+  }
+
+  return Game.merge(game, newObj).save();
+}
+
+let numberOfMoves;
 @JsonController()
 export default class GameController {
     @Post('/games')
@@ -40,34 +58,23 @@ export default class GameController {
 
     @Put('/games/:id')
     @HttpCode(201)
-    async updateGame(
-      @Param('id') id: number,
-      @Body() update: Object
-    ) {
+    async updateGame( @Param('id') id: number, @Body() update: Object) {
       let newObj = new Game();
       Object.assign(newObj, update);
-       validate(newObj).then(errors => {
-        async function changeGame () {
-          const game = await Game.findOne(id);
-          if(!game) {
-            throw new NotFoundError('Cannot find game');
-          }
-          let numberOfMoves = moves(newObj.board,game.board);
-          if (numberOfMoves != 1) {
-            throw new HttpError(400, "More than one move is not allowed");
-          }
-          return Game.merge(game, update).save();
-        }
-        if (errors.length > 0) {
-          console.log("Validation failed. errors: ", errors)
-        }  
-        else {
-          changeGame();
-        }
+      validate(newObj)
+        .then(errors => {
+            if (errors.length > 0) {
+              console.log("Validation failed. errors: ", errors)
+            }  
+            else {
+              changeGame(newObj, id);
+            }
+          });
+          return { status: "Update successful"};
       }
-    );  
-    }
-}
+};
+
+
 
 
 

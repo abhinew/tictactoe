@@ -14,6 +14,20 @@ const routing_controllers_1 = require("routing-controllers");
 const entity_1 = require("./entity");
 const class_validator_1 = require("class-validator");
 const lib_1 = require("./lib");
+async function changeGame(newObj, id) {
+    const game = await entity_1.default.findOne(id);
+    if (!game) {
+        throw new routing_controllers_1.NotFoundError('Cannot find game');
+    }
+    if (newObj.board) {
+        numberOfMoves = lib_1.moves(newObj.board, game.board);
+        if (numberOfMoves > 1) {
+            console.log("test");
+        }
+    }
+    return entity_1.default.merge(game, newObj).save();
+}
+let numberOfMoves;
 let GameController = class GameController {
     createGame(name) {
         let colorList = ['red', 'blue', 'green', 'yellow', 'magenta'];
@@ -38,25 +52,16 @@ let GameController = class GameController {
     async updateGame(id, update) {
         let newObj = new entity_1.default();
         Object.assign(newObj, update);
-        class_validator_1.validate(newObj).then(errors => {
-            async function changeGame() {
-                const game = await entity_1.default.findOne(id);
-                if (!game) {
-                    throw new routing_controllers_1.NotFoundError('Cannot find game');
-                }
-                let numberOfMoves = lib_1.moves(newObj.board, game.board);
-                if (numberOfMoves != 1) {
-                    throw new routing_controllers_1.HttpError(400, "More than one move is not allowed");
-                }
-                return entity_1.default.merge(game, update).save();
-            }
+        class_validator_1.validate(newObj)
+            .then(errors => {
             if (errors.length > 0) {
                 console.log("Validation failed. errors: ", errors);
             }
             else {
-                changeGame();
+                changeGame(newObj, id);
             }
         });
+        return { status: "Update successful" };
     }
 };
 __decorate([
@@ -74,10 +79,10 @@ __decorate([
 __decorate([
     routing_controllers_1.Put('/games/:id'),
     routing_controllers_1.HttpCode(201),
-    __param(0, routing_controllers_1.Param('id')),
-    __param(1, routing_controllers_1.Body())
+    __param(0, routing_controllers_1.Param('id')), __param(1, routing_controllers_1.Body())
 ], GameController.prototype, "updateGame", null);
 GameController = __decorate([
     routing_controllers_1.JsonController()
 ], GameController);
 exports.default = GameController;
+;
