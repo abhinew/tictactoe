@@ -1,5 +1,5 @@
 // src/pages/controller.ts
-import { JsonController, Get, Param, Put, Body, NotFoundError, HttpCode, Post, BodyParam, HttpError } from 'routing-controllers'
+import { JsonController, Get, Param, Put, Body, NotFoundError, HttpCode, Post, BodyParam, OnUndefined } from 'routing-controllers'
 import Game from './entity'
 import { validate } from 'class-validator';
 import { moves } from './lib';
@@ -57,7 +57,7 @@ export default class GameController {
     }
 
     @Put('/games/:id')
-    @HttpCode(201)
+    @OnUndefined(400)
     async updateGame( @Param('id') id: number, @Body() update: Object) {
       let newObj = new Game();
       Object.assign(newObj, update);
@@ -65,11 +65,15 @@ export default class GameController {
         .then(errors => {
             if (errors.length > 0) {
               console.log("Validation failed. errors: ", errors)
+              return undefined;
             }  
             else {
               changeGame(newObj, id);
             }
-          });
+        })
+        .catch(reason => {
+          console.log(reason);
+        });
           return { status: "Update successful"};
       }
 };

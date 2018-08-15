@@ -56,10 +56,14 @@ let GameController = class GameController {
             .then(errors => {
             if (errors.length > 0) {
                 console.log("Validation failed. errors: ", errors);
+                return undefined;
             }
             else {
                 changeGame(newObj, id);
             }
+        })
+            .catch(reason => {
+            console.log(reason);
         });
         return { status: "Update successful" };
     }
@@ -78,7 +82,7 @@ __decorate([
 ], GameController.prototype, "getGame", null);
 __decorate([
     routing_controllers_1.Put('/games/:id'),
-    routing_controllers_1.HttpCode(201),
+    routing_controllers_1.OnUndefined(400),
     __param(0, routing_controllers_1.Param('id')), __param(1, routing_controllers_1.Body())
 ], GameController.prototype, "updateGame", null);
 GameController = __decorate([
